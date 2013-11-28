@@ -131,6 +131,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\IKVM.7.3.4830.0\lib\IKVM.Runtime.JNI.dll</HintPath>
     </Reference>
+    <Reference Include="kuromoji-0.7.7, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\kuromoji-ikvm\kuromoji-0.7.7.exe</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="twitter4j-core-3.0.5, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -150,6 +154,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Lib\kuromoji-ikvm\kuromoji-0.7.7.exe" />
     <Content Include="Lib\t4j-ikvm\twitter4j-async-3.0.5.dll" />
     <Content Include="Lib\t4j-ikvm\twitter4j-core-3.0.5.dll" />
     <Content Include="Lib\t4j-ikvm\twitter4j-media-support-3.0.5.dll" />
