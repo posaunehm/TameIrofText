@@ -59,7 +59,7 @@ namespace TameIrofText
 
     public static class JavaListExtention
     {
-        public static IEnumerable<T> ToEnumerable<T>(this java.util.List jList)
+        public static IEnumerable<T> ToEnumerable<T>(this List jList)
         {
             var iterator = jList.iterator();
 
