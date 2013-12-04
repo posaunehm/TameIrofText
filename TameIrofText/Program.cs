@@ -42,9 +42,7 @@ namespace TameIrofText
             var n = wordsFromAllTweets.Count;
             foreach (var wordFromIrof in wordsFromAllIrof.Distinct())
             {
-                var tf = wordsFromAllIrof.Count(s => s == wordFromIrof);
-                var df = wordsFromAllTweets.Count(pair => pair.Value.Contains(wordFromIrof));
-                var rank = tf*Math.Log(n/(double)df);
+                var rank = CalculateRank(wordsFromAllIrof, wordFromIrof, wordsFromAllTweets, n);
 
                 irofRank.Add(wordFromIrof,rank);
             }
@@ -55,6 +53,14 @@ namespace TameIrofText
             }
 
             CliConsole.ReadKey();
+        }
+
+        private static double CalculateRank(List<string> wordsFromAllIrof, string wordFromIrof, Dictionary<long, List<string>> wordsFromAllTweets, int n)
+        {
+            var tf = wordsFromAllIrof.Count(s => s == wordFromIrof);
+            var df = wordsFromAllTweets.Count(pair => pair.Value.Contains(wordFromIrof));
+            var rank = tf*Math.Log(n/(double) df);
+            return rank;
         }
 
         private static IEnumerable<Token> ExtractNoun(List rawTokens)
@@ -79,8 +85,13 @@ namespace TameIrofText
                 }
                 catch
                 {
-                    statusStore = ConvertToTweetData(twitter.getHomeTimeline(new Paging(1, 200))
-                        .ToEnumerable<Status>()).ToList();
+                    statusStore = twitter.getHomeTimeline(new Paging(1, 200))
+                        .ToEnumerable<Status>().Where(status => !status.isRetweet())
+                        .Select(status =>
+                            new Tweet(
+                                status.getUser().getScreenName(),
+                                status.getText(),
+                                status.getId())).ToList();
                 }
 
 
@@ -90,7 +101,12 @@ namespace TameIrofText
 
                     var paging = new Paging(1, 200, 1, lastId + 1);
                     var tl = twitter.getHomeTimeline(paging).ToEnumerable<Status>();
-                    var tweetData = ConvertToTweetData(tl).ToArray();
+                    var tweetData = tl.Where(status => !status.isRetweet())
+                        .Select(status =>
+                            new Tweet(
+                                status.getUser().getScreenName(),
+                                status.getText(),
+                                status.getId())).ToArray();
 
                     if (!tweetData.Any()) { break;}
 
@@ -109,21 +125,12 @@ namespace TameIrofText
 
             return statusStore;
         }
-
-        private static IEnumerable<Tweet> ConvertToTweetData(IEnumerable<Status> statusStore)
-        {
-            return statusStore.Where(status => !status.isRetweet())
-                .Select(status =>
-                    new Tweet(
-                        status.getUser().getScreenName(),
-                        status.getText(),
-                        status.getId()));
-        }
     }
 
     public static class JavaListExtention
     {
-        public static IEnumerable<T> ToEnumerable<T>(this List jList)
+        public static System.Collections.Generic.IEnumerable<T> 
+            ToEnumerable<T>(this java.util.List jList)
         {
             var iterator = jList.iterator();
 
